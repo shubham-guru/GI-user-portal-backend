@@ -1,5 +1,5 @@
 const { signupController } = require('../controllers/signupController');
-const { updateAgreement } = require('../controllers/updateAgreement');
+const { updateAgreementController } = require('../controllers/updateAgreementController');
 
 exports.handler = async (event) => {
     if (event.httpMethod === 'OPTIONS') {
@@ -16,6 +16,6 @@ exports.handler = async (event) => {
     if(event.httpMethod === "POST"){
         return await signupController(event);
     } else {
-        return await updateAgreement(event)
+        return await updateAgreementController(event)
     }
 };

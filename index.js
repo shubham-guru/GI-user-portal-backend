@@ -23,7 +23,9 @@ exports.handler = async (event) => {
         return await signup.handler(event);
     } else if (route === apiRoutes.ADDRESS) {
         return await address.handler(event);
-    } else {
+    } else if (route === apiRoutes.GET_ADDRESSES) {
+        return await address.handler(event);
+    }else {
         return {
             statusCode: 404,
             body: JSON.stringify({ message: 'Route not found' })

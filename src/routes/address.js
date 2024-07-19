@@ -1,4 +1,6 @@
 const { addressController } = require("../controllers/addressController");
+const { getAddressesController } = require("../controllers/getAddressesController");
+const apiRoutes = require("../utils/apiRoutes");
 
 exports.handler = async (event) => {
     if (event.httpMethod === 'OPTIONS') {
@@ -12,5 +14,9 @@ exports.handler = async (event) => {
             body: JSON.stringify({ message: 'CORS preflight check.' })
         };
     }
-    return await addressController(event);
+    if(event.resource === apiRoutes.ADDRESS) {
+        return await addressController(event);
+    } else if(event.resource === apiRoutes.GET_ADDRESSES) {
+        return await getAddressesController(event);
+    }
 };

@@ -3,15 +3,15 @@ const { createResponse } = require('../utils/response');
 
 async function signupController(event) {
     try {
-        const { fullName, email, password, phone } = JSON.parse(event.body);
+        const { fullName, email, password, phone, registeredFrom, image } = JSON.parse(event.body);
 
-        if (!fullName || !email || !password || !phone) {
+        if (!fullName || !email || !registeredFrom || !password) {
             throw new Error('Missing required fields');
         }
 
-        await createUser(fullName, email, password, phone);
+        await createUser(fullName, email, password, phone, registeredFrom, image);
 
-        return createResponse(200, 'User Registered successfully');
+        return createResponse(200, 'User Successfully Registered');
     } catch (error) {
         return createResponse(500, 'Failed to insert data', { error: error.message });
     }
