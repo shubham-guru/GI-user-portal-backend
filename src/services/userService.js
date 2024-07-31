@@ -42,6 +42,9 @@ async function addAddress(companyName, completeAddress, pinCode, city, state, co
         const values = [companyName, completeAddress, pinCode, city, state, country, isDefault, userId];
 
         await conn.query(query, values);
+        const [rows] = await conn.query(query, values);
+
+        return rows;
     } catch (error) {
         console.error('Error calling stored procedure:', error);
         throw error;
@@ -74,8 +77,56 @@ async function getAddresses(userId) {
         const query = 'SELECT * FROM user_addresses WHERE USER_ID = ?';
         const values = [userId];
         const [rows] = await conn.query(query, values);
-        
-        return rows; 
+
+        return rows;
+    } catch (error) {
+        console.error('Error calling stored procedure:', error);
+        throw error;
+    } finally {
+        await conn.release();
+    }
+}
+
+// Get Selected Addresses
+async function getSelectedAddresses(addressId) {
+    const connection = await getConnection();
+    const conn = await connection.getConnection();
+    try {
+        const query = 'SELECT * FROM user_addresses WHERE USER_ADDRESS_ID = ?';
+        const values = [addressId];
+        const [rows] = await conn.query(query, values);
+
+        return rows;
+    } catch (error) {
+        console.error('Error calling stored procedure:', error);
+        throw error;
+    } finally {
+        await conn.release();
+    }
+}
+
+
+// Add Order Details
+async function addOrderDetails(event, userId) {
+    const connection = await getConnection();
+    const conn = await connection.getConnection();
+    const { fullName, email, phone, alternatePhone, completeAddress, pinCode, city, state, country, productName, quantity, unitValue, hsnCode, skuWeight, skuColor, skuSize, weight, height, breadth, length, weightUnit, sidesUnit, isWarehouse, pickUpAddressId, orderType, totalFare, isPaid, paymentId } = JSON.parse(event.body);
+
+    try {
+        // Ensure userId is not null or undefined
+        if (!userId) {
+            throw new Error('User ID is required');
+        }
+
+        const query = 'CALL AddOrderDetails(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        const values = [fullName, email, phone, alternatePhone, completeAddress, pinCode, city, state, country, productName, quantity, unitValue, hsnCode, skuWeight, skuColor, skuSize, weight, length, breadth, height, weightUnit, sidesUnit, isWarehouse, pickUpAddressId, orderType, totalFare, isPaid, paymentId, userId];
+
+        // Execute the stored procedure
+        await conn.query(query, values);
+
+        return {
+            message: 'Order Details Added Successfully',
+        };
     } catch (error) {
         console.error('Error calling stored procedure:', error);
         throw error;
@@ -90,5 +141,7 @@ module.exports = {
     createUser,
     addAddress,
     updateUserAgreement,
-    getAddresses
+    getAddresses,
+    addOrderDetails,
+    getSelectedAddresses
 };

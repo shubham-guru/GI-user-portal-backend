@@ -1,6 +1,7 @@
-const login = require("./src/routes/login");
-const signup = require("./src/routes/signup");
-const address = require("./src/routes/address");
+const login = require("./src/handlers/login");
+const signup = require("./src/handlers/signup");
+const address = require("./src/handlers/address");
+const addOrderInfo = require("./src/handlers/addOrderInfo");
 const apiRoutes = require('./src/utils/apiRoutes');
 
 exports.handler = async (event) => {
@@ -25,7 +26,11 @@ exports.handler = async (event) => {
         return await address.handler(event);
     } else if (route === apiRoutes.GET_ADDRESSES) {
         return await address.handler(event);
-    }else {
+    } else if (route === apiRoutes.GET_SELECTED_ADDRESS) {
+        return await address.handler(event);
+    } else if (route === apiRoutes.ADD_ORDER_DETAILS) {
+        return await addOrderInfo.handler(event);
+    } else {
         return {
             statusCode: 404,
             body: JSON.stringify({ message: 'Route not found' })

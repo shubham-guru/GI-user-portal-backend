@@ -14,9 +14,9 @@ async function addressController(event) {
             if (!companyName || !completeAddress || !pinCode || !city || !state || !country) {
                 throw new Error('Missing required fields');
             }
-            await addAddress(companyName, completeAddress, pinCode, city, state, country, isDefault, userId);
+            const address = await addAddress(companyName, completeAddress, pinCode, city, state, country, isDefault, userId);
     
-            return createResponse(200, 'Address Saved Successfully');
+            return createResponse(200, 'Address Saved Successfully', { address });
         } catch (error) {
             return createResponse(500, 'Address not saved', { error: error.message });
         }
