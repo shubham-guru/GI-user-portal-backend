@@ -2,6 +2,7 @@ const login = require("./src/handlers/login");
 const signup = require("./src/handlers/signup");
 const address = require("./src/handlers/address");
 const addOrderInfo = require("./src/handlers/addOrderInfo");
+const getOrders = require("./src/handlers/getOrders");
 const apiRoutes = require('./src/utils/apiRoutes');
 
 exports.handler = async (event) => {
@@ -30,6 +31,8 @@ exports.handler = async (event) => {
         return await address.handler(event);
     } else if (route === apiRoutes.ADD_ORDER_DETAILS) {
         return await addOrderInfo.handler(event);
+    } else if (route === apiRoutes.GET_ALL_ORDERS) {
+        return await getOrders.handler(event);
     } else {
         return {
             statusCode: 404,

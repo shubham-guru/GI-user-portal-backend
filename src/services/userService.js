@@ -110,7 +110,7 @@ async function getSelectedAddresses(addressId) {
 async function addOrderDetails(event, userId) {
     const connection = await getConnection();
     const conn = await connection.getConnection();
-    const { fullName, email, phone, alternatePhone, completeAddress, pinCode, city, state, country, productName, quantity, unitValue, hsnCode, skuWeight, skuColor, skuSize, weight, height, breadth, length, weightUnit, sidesUnit, isWarehouse, pickUpAddressId, orderType, totalFare, isPaid, paymentId } = JSON.parse(event.body);
+    const { fullName, email, phone, alternatePhone, completeAddress, pinCode, city, state, country, products, weight, height, breadth, length, weightUnit, sidesUnit, isWarehouse, pickUpAddressId, orderType, totalFare, isPaid, paymentId } = JSON.parse(event.body);
 
     try {
         // Ensure userId is not null or undefined
@@ -118,8 +118,19 @@ async function addOrderDetails(event, userId) {
             throw new Error('User ID is required');
         }
 
-        const query = 'CALL AddOrderDetails(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-        const values = [fullName, email, phone, alternatePhone, completeAddress, pinCode, city, state, country, productName, quantity, unitValue, hsnCode, skuWeight, skuColor, skuSize, weight, length, breadth, height, weightUnit, sidesUnit, isWarehouse, pickUpAddressId, orderType, totalFare, isPaid, paymentId, userId];
+         // Create JSON string for product details
+         const productDetails = JSON.stringify(products.map(product => ({
+            productName: product.productName,
+            quantity: product.quantity,
+            unitValue: product.unitValue,
+            hsnCode: product.hsnCode,
+            skuWeight: product.skuWeight,
+            skuColor: product.skuColor,
+            skuSize: product.skuSize,
+        })));
+
+        const query = 'CALL AddOrderDetails(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        const values = [fullName, email, phone, alternatePhone, completeAddress, pinCode, city, state, country, productDetails, weight, length, breadth, height, weightUnit, sidesUnit, isWarehouse, pickUpAddressId, orderType, totalFare, isPaid, paymentId, userId];
 
         // Execute the stored procedure
         await conn.query(query, values);
@@ -135,6 +146,22 @@ async function addOrderDetails(event, userId) {
     }
 }
 
+async function getOrders(userId) {
+    const connection = await getConnection();
+    const conn = await connection.getConnection();
+    try {
+        const query = 'SELECT * from gi_orders where USER_ID = ?';
+        const values = [userId];
+        const [rows] = await conn.query(query, values);
+
+        return rows;
+    } catch (error) {
+        console.error('Error calling stored procedure:', error);
+        throw error;
+    } finally {
+        await conn.release();
+    }
+}
 
 module.exports = {
     loginUser,
@@ -143,5 +170,6 @@ module.exports = {
     updateUserAgreement,
     getAddresses,
     addOrderDetails,
-    getSelectedAddresses
+    getSelectedAddresses,
+    getOrders
 };

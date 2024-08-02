@@ -5,6 +5,7 @@ const { createResponse } = require('../utils/response');
 async function addOrderDetailsController(event) {
     const authResult = await authenticateToken(event);
     const authData = JSON.parse(authResult.body);
+    const userId = authData?.userId;
 
     if (authResult.statusCode === 200) {
         try {

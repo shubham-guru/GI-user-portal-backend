@@ -3,6 +3,7 @@ module.exports = {
     SIGNUP: "/create-user",
     ADDRESS: "/user-address",
     GET_ADDRESSES: "/get-addresses",
+    GET_ALL_ORDERS: "/get-orders",
     GET_SELECTED_ADDRESS: "/get-selected-address",
     ADD_ORDER_DETAILS: "/add-order-details"
 };
